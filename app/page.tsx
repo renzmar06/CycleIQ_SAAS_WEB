@@ -5,7 +5,7 @@ export default function Home() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="text-center">
         <h1 className="text-4xl font-bold text-gray-900 mb-8">
-          Welcome to Next.js with Tailwind CSS
+          Welcome to CycleIQ
         </h1>
         <Link
           href="/login"
