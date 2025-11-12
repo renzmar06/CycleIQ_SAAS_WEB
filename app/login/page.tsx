@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { loginUser } from "../../redux/authSlice";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
   const dispatch = useAppDispatch();
@@ -27,8 +28,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-b from-gray-100 to-amber-50">
-      <div className="bg-white shadow-xl rounded-2xl overflow-hidden flex flex-col md:flex-row w-full max-w-5xl">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-b from-gray-100 to-green-100">
+      <div className="container mx-auto  overflow-hidden flex flex-col md:flex-row w-full ">
         {/* Left side (Form) */}
         <div className="w-full md:w-1/2 p-8 md:p-12">
           {/* Logo */}
@@ -43,11 +44,11 @@ export default function Login() {
             {/* Email input */}
             <div className="mb-4">
               <label className="block text-gray-700 mb-1">Email</label>
-              <div className="flex items-center border rounded-lg px-3 py-2">
+              <div className="flex items-center bg-white border border-gray-400  rounded-lg px-3 py-2">
                 <input
                   type="email"
                   placeholder="Enter your Email"
-                  className="w-full outline-none text-gray-700"
+                  className="w-full bg-white outline-none text-gray-700"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -58,11 +59,11 @@ export default function Login() {
             {/* Password input */}
             <div className="mb-4">
               <label className="block text-gray-700 mb-1">Password</label>
-              <div className="flex items-center border rounded-lg px-3 py-2">
+              <div className="flex items-center bg-white border border-gray-400 rounded-lg px-3 py-2">
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
-                  className="w-full outline-none text-gray-700"
+                  className="w-full bg-white outline-none text-gray-700"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -72,7 +73,7 @@ export default function Login() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="ml-2 text-gray-500 hover:text-gray-700"
                 >
-                  {showPassword ? "🙈" : "👁️"}
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
             </div>
