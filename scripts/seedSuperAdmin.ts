@@ -33,7 +33,7 @@ async function connectDB() {
 async function seed() {
     await connectDB();
 
-    const email = "superadmin@cycleiq";
+    const email = "superadmin@cycleiq.com";
     const password = "123123123!";
     const name = "Super Admin";
 
