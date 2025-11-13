@@ -1,15 +1,26 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Bell, User, PlayCircle, Menu, LogOut, ChevronDown } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { logoutUser } from '../../redux/authSlice';
 
 interface HeaderProps {
   onSidebarToggle: () => void;
 }
 
 export default function Header({ onSidebarToggle }: HeaderProps) {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const { user } = useAppSelector((state) => state.auth);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+
+  const handleLogout = async () => {
+    await dispatch(logoutUser());
+    router.push('/login');
+  };
 
   return (
     <header className="bg-white border-b border-gray-200 px-6 py-3 sticky top-0 z-10">
@@ -84,21 +95,24 @@ export default function Header({ onSidebarToggle }: HeaderProps) {
               className="flex items-center space-x-2 hover:bg-gray-50 rounded-lg p-2 transition-colors"
             >
               <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
-                <span className="text-teal-700 font-semibold text-sm">P</span>
+                <span className="text-teal-700 font-semibold text-sm">{user?.name?.charAt(0) || 'U'}</span>
               </div>
               <div className="hidden md:block">
-                <p className="text-sm font-medium text-gray-900">phresh603</p>
+                <p className="text-sm font-medium text-gray-900">{user?.name || 'User'}</p>
               </div>
               <ChevronDown size={16} className="text-gray-400" />
             </button>
             
             {isProfileOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20">
-                <button className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                <button className="w-full cursor-pointer flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
                   <User size={16} />
                   <span>Profile</span>
                 </button>
-                <button className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                <button 
+                  onClick={handleLogout}
+                  className="w-full flex cursor-pointer items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                >
                   <LogOut size={16} />
                   <span>Logout</span>
                 </button>

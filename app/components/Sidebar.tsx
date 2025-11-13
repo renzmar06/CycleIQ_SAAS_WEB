@@ -7,13 +7,8 @@ import {
   Ticket,
   Users,
   UserPlus,
-  DollarSign,
-  Tags,
-  FileText,
-  BarChart3,
-  Package,
-  Truck,
-  Box,
+ Shield,
+ CheckSquare,
   Menu,
   ChevronLeft,
   ChevronDown,
@@ -53,6 +48,15 @@ const menuItems: MenuItem[] = [
       { icon: Plus, label: 'Add Customer', href: '/customers/add' },
     ],
   },
+  {
+  icon: Shield,
+  label: 'Role & Permissions',
+  hasDropdown: true,
+  subItems: [
+    { icon: Users, label: 'Roles', href: '/roles' },
+    { icon: CheckSquare, label: 'Permissions', href: '/permissions' },
+  ],
+},
   { icon: UserPlus, label: 'Leads', href: '/leads' },
  
 ];

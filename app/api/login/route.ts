@@ -68,7 +68,7 @@ export async function POST(req: Request) {
             { expiresIn: "7d" }
         );
 
-        return NextResponse.json(
+        const response = NextResponse.json(
             {
                 success: true,
                 message: "Login successful",
@@ -82,6 +82,16 @@ export async function POST(req: Request) {
             },
             { status: 200 }
         );
+
+        // Set cookie for middleware
+        response.cookies.set('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 // 7 days
+        });
+
+        return response;
 
     } catch (error: any) {
         console.error("Login API Error:", error);

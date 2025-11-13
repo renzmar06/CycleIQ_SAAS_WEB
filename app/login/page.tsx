@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { loginUser } from "../../redux/authSlice";
@@ -9,11 +9,18 @@ import { Eye, EyeOff } from "lucide-react";
 export default function Login() {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { loading, error, user } = useAppSelector((state) => state.auth);
+  const { loading, error, user, isAuthenticated } = useAppSelector((state) => state.auth);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,20 +110,6 @@ export default function Login() {
           {error && <p className="text-red-500 text-sm mt-3">{error}</p>}
           {user && <p className="text-green-600 text-sm mt-3">Welcome {user.email}</p>}
 
-          {/* Role buttons */}
-          <div className="grid grid-cols-3 gap-3 mt-6">
-            {["Super Admin", "Admin", "Manager", "Restaurant", "Chef", "Waiter"].map(
-              (role, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  className="border-2 border-gray-300 text-gray-700 rounded-md py-2 text-sm font-semibold"
-                >
-                  {role}
-                </button>
-              )
-            )}
-          </div>
 
           {/* Links */}
           <div className="flex justify-between text-sm text-gray-600 mt-6">
