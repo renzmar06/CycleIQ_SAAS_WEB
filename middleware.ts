@@ -1,23 +1,27 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get('token')?.value;
   const { pathname } = request.nextUrl;
 
-  // Public routes that don't require authentication
-  const publicRoutes = ['/login'];
-
-  // If user is on a public route, allow access
-  if (publicRoutes.includes(pathname)) {
-    return NextResponse.next();
+  // Debug logging
+  const token = request.cookies.get('token')?.value;
+  console.log('Middleware - Path:', pathname);
+  console.log('Middleware - Token exists:', !!token);
+  
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      console.log('Middleware - Token valid:', !!decoded);
+    } catch (error) {
+      console.log('Middleware - Token invalid:', error);
+    }
   }
 
-  // If user is not authenticated and trying to access protected route
-  if (!token) {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
-
+  // Temporarily allow all routes
   return NextResponse.next();
 }
 

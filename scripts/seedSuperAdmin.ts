@@ -40,12 +40,7 @@ async function seed() {
     const existing = await User.findOne({ email });
 
     if (existing) {
-        await User.updateOne(
-            { _id: existing._id },
-            { $set: { role: "superadmin" } }
-        );
-
-        console.log("⚠️  Updated existing superadmin");
+        console.log("⚠️  Superadmin already exists");
         process.exit(0);
     }
 
@@ -55,7 +50,6 @@ async function seed() {
         name,
         email,
         password: hashedPassword,
-        role: "superadmin",
         isAdmin: true,
     });
 
