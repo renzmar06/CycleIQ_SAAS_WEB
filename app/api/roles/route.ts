@@ -11,15 +11,21 @@ async function connectDB() {
   }
 }
 
-// GET - List all roles
+// GET 
 export async function GET() {
   try {
     await connectDB();
     const roles = await Role.find({}).sort({ createdAt: -1 });
-    const rolesWithStringId = roles.map(role => ({
-      ...role.toObject(),
-      _id: role._id.toString()
-    }));
+    const rolesWithStringId = roles.map(role => {
+  const roleObj = role.toObject();
+ 
+  if (roleObj._id && typeof roleObj._id === 'object' && roleObj._id.$oid) {
+    roleObj._id = roleObj._id.$oid;
+  } else {
+    roleObj._id = roleObj._id.toString();
+  }
+  return roleObj;
+});
     return NextResponse.json({ success: true, data: rolesWithStringId });
   } catch (error: any) {
     return NextResponse.json(

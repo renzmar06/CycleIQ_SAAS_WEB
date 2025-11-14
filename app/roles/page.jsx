@@ -34,13 +34,33 @@ export default function Roles() {
     }
   };
 
+  // Helper function to extract ID from role object
+  const extractRoleId = (role) => {
+    if (!role) return '';
+    
+    // If _id is an object with $oid property (MongoDB extended JSON format)
+    if (role._id && typeof role._id === 'object' && role._id.$oid) {
+      return role._id.$oid;
+    }
+    // If _id is already a string
+    else if (typeof role._id === 'string') {
+      return role._id;
+    }
+    // Fallback - try to get the first value if it's an object
+    else if (role._id && typeof role._id === 'object') {
+      return Object.values(role._id)[0] || '';
+    }
+    
+    return '';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     try {
       let roleId = null;
       if (editingRole) {
-        roleId = editingRole._id || editingRole._id?.$oid || Object.values(editingRole)[0];
+        roleId = extractRoleId(editingRole);
         console.log('editingRole:', editingRole);
         console.log('extracted roleId:', roleId);
       }
@@ -68,9 +88,15 @@ export default function Roles() {
   };
 
   const handleDelete = async (role) => {
-    const roleId = role._id || role._id?.$oid || Object.values(role)[0];
+    const roleId = extractRoleId(role);
     console.log('delete role:', role);
     console.log('delete roleId:', roleId);
+    
+    if (!roleId) {
+      alert('Invalid role ID');
+      return;
+    }
+
     if (confirm('Are you sure you want to delete this role?')) {
       try {
         const response = await fetch(`/api/roles/${roleId}`, { method: 'DELETE' });
@@ -138,7 +164,7 @@ export default function Roles() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {roles.map((role) => (
-                  <tr key={role._id}>
+                  <tr key={extractRoleId(role)}>
                     <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{role.name}</td>
                     <td className="px-6 py-4 text-gray-500">{role.description}</td>
                     <td className="px-6 py-4">

@@ -17,7 +17,16 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     
     await connectDB();
     
-    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+    let { id } = params;
+    
+    // Fallback: extract ID from URL if params is empty
+    if (!id) {
+      const url = new URL(req.url);
+      const pathParts = url.pathname.split('/');
+      id = pathParts[pathParts.length - 1];
+    }
+    
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
         { success: false, message: 'Invalid permission ID format' },
         { status: 400 }
@@ -25,7 +34,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     }
     
     const permission = await Permission.findByIdAndUpdate(
-      params.id,
+      id,
       { name, description, module, isActive },
       { new: true, runValidators: true }
     );
@@ -60,14 +69,22 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
   try {
     await connectDB();
     
-    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+    let { id } = params;
+    
+    if (!id) {
+      const url = new URL(req.url);
+      const pathParts = url.pathname.split('/');
+      id = pathParts[pathParts.length - 1];
+    }
+    
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
         { success: false, message: 'Invalid permission ID format' },
         { status: 400 }
       );
     }
     
-    const permission = await Permission.findByIdAndDelete(params.id);
+    const permission = await Permission.findByIdAndDelete(id);
 
     if (!permission) {
       return NextResponse.json(
