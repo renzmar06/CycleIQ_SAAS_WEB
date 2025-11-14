@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Layout } from '../components';
+import { Layout, PermissionGuard } from '../components';
 import { Plus, Edit, Trash2, Eye } from 'lucide-react';
 
 export default function Roles() {
@@ -137,16 +137,18 @@ export default function Roles() {
             <h2 className="text-2xl font-bold text-gray-900">Roles Management</h2>
             <p className="text-gray-600 mt-1">Manage user roles and permissions</p>
           </div>
-          <button
-            onClick={() => {
-              resetForm();
-              setShowModal(true);
-            }}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
-          >
-            <Plus size={20} />
-            Add Role
-          </button>
+          <PermissionGuard permission="roles.create">
+            <button
+              onClick={() => {
+                resetForm();
+                setShowModal(true);
+              }}
+              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2"
+            >
+              <Plus size={20} />
+              Add Role
+            </button>
+          </PermissionGuard>
         </div>
 
         {loading ? (
@@ -174,18 +176,22 @@ export default function Roles() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleEdit(role)}
-                          className="text-indigo-600 hover:text-indigo-900"
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(role)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                        <PermissionGuard permission="roles.edit">
+                          <button
+                            onClick={() => handleEdit(role)}
+                            className="text-indigo-600 hover:text-indigo-900"
+                          >
+                            <Edit size={16} />
+                          </button>
+                        </PermissionGuard>
+                        <PermissionGuard permission="roles.delete">
+                          <button
+                            onClick={() => handleDelete(role)}
+                            className="text-red-600 hover:text-red-900"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </PermissionGuard>
                       </div>
                     </td>
                   </tr>

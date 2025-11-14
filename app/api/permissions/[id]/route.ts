@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
-import Permission from '../../../../models/Permission';
+import Permission from '@/models/Permission';
 
-const MONGO_URI = process.env.NEXT_MONGODB_URI || '';
+const MONGO_URI = process.env.NEXT_MONGODB_URI!;
 
 async function connectDB() {
   if (mongoose.connection.readyState === 0) {
@@ -10,97 +10,31 @@ async function connectDB() {
   }
 }
 
-// PUT - Update permission
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { name, description, module, isActive } = await req.json();
-    
     await connectDB();
-    
-    let { id } = params;
-    
-    // Fallback: extract ID from URL if params is empty
-    if (!id) {
-      const url = new URL(req.url);
-      const pathParts = url.pathname.split('/');
-      id = pathParts[pathParts.length - 1];
-    }
-    
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json(
-        { success: false, message: 'Invalid permission ID format' },
-        { status: 400 }
-      );
-    }
-    
-    const permission = await Permission.findByIdAndUpdate(
-      id,
-      { name, description, module, isActive },
-      { new: true, runValidators: true }
-    );
-
+    const { id } = await params;
+    const body = await req.json();
+    const permission = await Permission.findByIdAndUpdate(id, body, { new: true });
     if (!permission) {
-      return NextResponse.json(
-        { success: false, message: 'Permission not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, message: 'Permission not found' }, { status: 404 });
     }
-
-    const permissionWithStringId = {
-      ...permission.toObject(),
-      _id: permission._id.toString()
-    };
-
-    return NextResponse.json({
-      success: true,
-      data: permissionWithStringId,
-      message: 'Permission updated successfully'
-    });
+    return NextResponse.json({ success: true, data: permission });
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, message: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: error.message }, { status: 400 });
   }
 }
 
-// DELETE - Delete permission
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectDB();
-    
-    let { id } = params;
-    
-    if (!id) {
-      const url = new URL(req.url);
-      const pathParts = url.pathname.split('/');
-      id = pathParts[pathParts.length - 1];
-    }
-    
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json(
-        { success: false, message: 'Invalid permission ID format' },
-        { status: 400 }
-      );
-    }
-    
+    const { id } = await params;
     const permission = await Permission.findByIdAndDelete(id);
-
     if (!permission) {
-      return NextResponse.json(
-        { success: false, message: 'Permission not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, message: 'Permission not found' }, { status: 404 });
     }
-
-    return NextResponse.json({
-      success: true,
-      message: 'Permission deleted successfully'
-    });
+    return NextResponse.json({ success: true, message: 'Permission deleted successfully' });
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, message: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
 }

@@ -18,19 +18,24 @@ export default function Login() {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      router.push('/dashboard');
+      router.replace('/dashboard');
     }
   }, [isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Dispatch login thunk
-    const resultAction = await dispatch(loginUser({ email, password }));
+    try {
+      // Dispatch login thunk
+      const resultAction = await dispatch(loginUser({ email, password }));
 
-    // ✅ Type-safe check for fulfilled login
-    if (loginUser.fulfilled.match(resultAction)) {
-      router.push("/dashboard"); // Redirect on success
+      // ✅ Type-safe check for fulfilled login
+      if (loginUser.fulfilled.match(resultAction)) {
+        // Force redirect using window.location as fallback
+        window.location.href = '/dashboard';
+      }
+    } catch (error) {
+      console.error('Login error:', error);
     }
   };
 

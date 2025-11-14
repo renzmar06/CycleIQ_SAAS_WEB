@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "seed:superadmin": "node --loader ts-node/esm scripts/seedSuperAdmin.ts",
+    "seed:roles": "node scripts/seedRoles.js",
+    "create:testuser": "node scripts/createTestUser.js",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
